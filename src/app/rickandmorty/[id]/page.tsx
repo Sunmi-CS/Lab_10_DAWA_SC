@@ -29,29 +29,12 @@ import {
 // ISR: Revalidar cada 10 días (864000 seg)
 export const revalidate = 864000;
 
-// ✅ generateStaticParams: genera rutas estáticas para TODOS los personajes
-// SSG en build-time → rutas pre-renderizadas por ID
+// ✅ generateStaticParams: Solución definitiva para el firewall de Render
+// Al devolver un arreglo vacío, no se descarga nada en tiempo de build, evitando bloqueos.
+// Todos los personajes se generarán de manera incremental (ISR) cuando los usuarios entren a la web.
 export async function generateStaticParams() {
-  let allCharacters: { id: number }[] = [];
-  let page = 1;
-  let hasMore = true;
-  const MAX_PAGES_AT_BUILD = 3; //  Pre-renderiza 60 personajes; el resto se generará bajo demanda (ISR)
-
-  while (hasMore && page <= MAX_PAGES_AT_BUILD) {
-    const res = await fetch(
-      `https://rickandmortyapi.com/api/character?page=${page}`,
-      { cache: "force-cache" }
-    );
-    if (!res.ok) break;
-    const data: CharacterListResponse = await res.json();
-    allCharacters = allCharacters.concat(data.results.map((c) => ({ id: c.id })));
-    hasMore = data.info.next !== null;
-    page++;
-  }
-
-  return allCharacters.map((c) => ({ id: String(c.id) }));
+  return [];
 }
-
 async function getCharacter(id: string): Promise<Character> {
   const res = await fetch(`https://rickandmortyapi.com/api/character/${id}`, {
     next: { revalidate: 864000 }, // ISR: 10 días
