@@ -29,9 +29,6 @@ import {
 // ISR: Revalidar cada 10 días (864000 seg)
 export const revalidate = 864000;
 
-// ✅ generateStaticParams: Solución definitiva para el firewall de Render
-// Al devolver un arreglo vacío, no se descarga nada en tiempo de build, evitando bloqueos.
-// Todos los personajes se generarán de manera incremental (ISR) cuando los usuarios entren a la web.
 export async function generateStaticParams() {
   return [];
 }
