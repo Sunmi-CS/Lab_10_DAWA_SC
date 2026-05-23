@@ -35,8 +35,9 @@ export async function generateStaticParams() {
   let allCharacters: { id: number }[] = [];
   let page = 1;
   let hasMore = true;
+  const MAX_PAGES_AT_BUILD = 3; //  Pre-renderiza 60 personajes; el resto se generará bajo demanda (ISR)
 
-  while (hasMore) {
+  while (hasMore && page <= MAX_PAGES_AT_BUILD) {
     const res = await fetch(
       `https://rickandmortyapi.com/api/character?page=${page}`,
       { cache: "force-cache" }
@@ -77,7 +78,7 @@ export async function generateMetadata({
 // Colores y etiquetas para status
 const STATUS_CONFIG: Record<
   string,
-  { color: string; bg: string; icon: React.ComponentType<{ size?: number }> ; label: string }
+  { color: string; bg: string; icon: React.ComponentType<{ size?: number }>; label: string }
 > = {
   Alive: {
     color: "text-emerald-400",
